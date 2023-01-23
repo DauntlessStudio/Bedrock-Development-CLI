@@ -19,7 +19,7 @@ program
   .on('option:bpath', Global.setBehaviorPath)
   .option('-i, --indent <number>', 'set indent level for JSON files', '4')
   .on('option:indent', Global.setIndentLevel)
-  .version('0.8.0');
+  .version('1.0.1');
 
 // #region New Commands
 let createNew = program.command('new')
