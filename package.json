@@ -1,0 +1,32 @@
+{
+  "name": "bedrock-development-cli",
+  "version": "1.0.0",
+  "description": "A CLI to assist development for Minecraft Bedrock",
+  "main": "bin/index.js",
+  "scripts": {
+    "build": "npx tsc -w",
+    "clear": "rm ./behavior_packs/** -r && rm ./resource_packs/** -r"
+  },
+  "bin": {
+    "bed": "./bin/index.js"
+  },
+  "keywords": [
+    "Minecraft",
+    "Bedrock"
+  ],
+  "author": "Caleb Coldiron",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.2.3",
+    "chalk": "^4.1.0",
+    "commander": "^10.0.0",
+    "comment-json": "^4.2.3",
+    "glob": "^8.1.0",
+    "octokit": "^2.0.13"
+  },
+  "devDependencies": {
+    "@types/glob": "^8.0.1",
+    "@types/node": "^18.11.18",
+    "typescript": "^4.9.4"
+  }
+}
