@@ -13,10 +13,6 @@
             "path": "ts\\"
         },
         {
-            "name": "SRC",
-            "path": "bin\\app\\src"
-        },
-        {
             "name": "Root",
             "path": "."
         }

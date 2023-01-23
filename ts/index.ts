@@ -1,12 +1,12 @@
 #! /usr/bin/env node
 import {Command, Option, OptionValues} from 'commander';
-import * as Global from './app/globals';
-import * as Entity from './app/entity';
-import * as Item from './app/item';
-import * as Block from './app/block';
-import * as Animation from './app/animations';
-import * as Function from './app/functions';
-import * as Package from './app/package_manager';
+import * as Global from 'bedrock-development/bin/app/globals';
+import * as Entity from 'bedrock-development/bin/app/entity';
+import * as Item from 'bedrock-development/bin/app/item';
+import * as Block from 'bedrock-development/bin/app/block';
+import * as Animation from 'bedrock-development/bin/app/animations';
+import * as Function from 'bedrock-development/bin/app/functions';
+import * as Package from 'bedrock-development/bin/app/package_manager';
 
 let program = new Command();
 
