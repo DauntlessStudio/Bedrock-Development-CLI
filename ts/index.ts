@@ -11,7 +11,7 @@ import * as Package from 'bedrock-development/bin/app/package_manager';
 let program = new Command();
 
 program
-  .name('bedrock')
+  .name('bed')
   .description('CLI to assist Minecraft Bedrock Development')
   .option('--rpath <rp>', 'Path to Resource Pack')
   .on('option:rpath', Global.setResourcePath)
@@ -19,7 +19,7 @@ program
   .on('option:bpath', Global.setBehaviorPath)
   .option('-i, --indent <number>', 'set indent level for JSON files', '4')
   .on('option:indent', Global.setIndentLevel)
-  .version('1.0.1');
+  .version('1.0.2');
 
 // #region New Commands
 let createNew = program.command('new')
