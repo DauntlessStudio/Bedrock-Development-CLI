@@ -40,10 +40,9 @@ createNew.command('entity')
 createNew.command('item')
   .description('Creates new Bedrock items')
   .argument('<names...>', 'item names as "namespace:item"')
-  .option('-l, --lang', 'add lang file')
-  .option('-e, --edible', 'is this item edible (designed for interacts)')
+  .option('--no-lang', 'do not add lang file')
   .option('-s, --stack <stack_size>', 'max stack size', '64')
-  .option('-a, --attachable', 'is this item an attachable')
+  .addOption(new Option('-t, --type <item_type>', 'basic').choices(Object.keys(Item.itemType)))
   .action(triggerCreateNewItem)
   .hook('postAction', printVersion);
 
@@ -196,10 +195,9 @@ async function triggerCreateNewEntity(names: string[], options: OptionValues) {
 async function triggerCreateNewItem(names: string[], options: OptionValues) {
   await setPaths();
   const lang = options.lang;
-  const edible = options.edible;
   const stack = options.stack;
-  const attachable = options.attachable;
-  await Item.createNewItem(names, lang, edible, stack, attachable);
+  const type = options.type as Item.itemType;
+  await Item.createNewItem(names, lang, stack, type);
 }
 
 async function triggerCreateNewBlock(names: string[], options: OptionValues) {
