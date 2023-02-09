@@ -1,12 +1,12 @@
 {
   "name": "bedrock-development-cli",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "A CLI to assist development for Minecraft Bedrock",
   "main": "bin/index.js",
   "scripts": {
     "build": "npx tsc -w",
     "clear": "rm ./behavior_packs/** -r && rm ./resource_packs/** -r",
-    "prepare": "npx tsc"
+    "prepare": "node update_version.js && npx tsc"
   },
   "bin": {
     "bed": "./bin/index.js"
