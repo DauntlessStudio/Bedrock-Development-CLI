@@ -10,7 +10,7 @@ import * as Package from 'bedrock-development/bin/app/package_manager';
 import axios from 'axios';
 
 let program = new Command();
-const version = '1.0.9'
+const version = '1.0.10'
 
 program
   .name('bed')
