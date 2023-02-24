@@ -10,7 +10,7 @@ import * as Package from 'bedrock-development/bin/app/package_manager';
 import axios from 'axios';
 
 let program = new Command();
-const version = '1.0.10'
+const version = '1.0.11'
 
 program
   .name('bed')
@@ -21,7 +21,7 @@ program
   .on('option:bpath', Global.setBehaviorPath)
   .option('-i, --indent <number>', 'set indent tabs level for JSON files', '1')
   .on('option:indent', Global.setIndentLevel)
-  .version(version)
+  .version(version, '-v, --version')
   .action(printVersion)
 
 // #region New Commands
