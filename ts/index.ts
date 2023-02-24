@@ -10,7 +10,7 @@ import * as Package from 'bedrock-development/bin/app/package_manager';
 import axios from 'axios';
 
 let program = new Command();
-const version = '1.0.11'
+const version = '1.0.12'
 
 program
   .name('bed')
@@ -163,6 +163,8 @@ let pkg = program.command('pkg')
 
 pkg.command('list')
   .description('List packages at repo')
+  .option('-d, --detailed', 'gets extra details about the package, if available')
+  .option('-f --filter <filter>', 'filter the packages by name or category')
   .action(triggerPackagesList)
   .hook('postAction', printVersion);
 
@@ -284,14 +286,18 @@ async function triggerEntityAddDamageSensor(sensor: string, options: OptionValue
   await Entity.entityAddDamageSensor(sensor, type, file);
 }
 
-async function triggerPackagesList() {
-  try {
-    let response = await Package.packageList();
+async function triggerPackagesList(options: OptionValues) {
+  const verbose = options.detailed;
+  const filter = options.filter;
 
-    let index = 0;
+  try {
+    let response = await Package.packageList(filter);
+
     for (const pkg of response) {
-      console.log(`[${index}] ${Global.chalk.green(`${pkg.name}`)}`);
-      index++
+      console.log(`[${pkg.index}] ${Global.chalk.green(`${pkg.display_name}`)}`);
+      if (verbose && pkg.description) {
+        console.log(`\t${pkg.description}`)
+      }
     }
   } catch (error) {
     console.log(`${Global.chalk.red(`GITHUB_TOKEN either missing or invalid`)}`);
