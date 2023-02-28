@@ -11,3 +11,5 @@ Check that it has installed with:
 ```
 bed --version
 ```
+## Usage
+View the full command list and examples [here](documentation/commands.md).
