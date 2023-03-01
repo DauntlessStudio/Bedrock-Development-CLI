@@ -460,18 +460,31 @@ This will attempt to find an animation, or controller called 'player.test'. If i
 &nbsp;
 
 ---
-## Add Component Groups To Entities
-Desc...
+## Add Components To Entities
+Adds a component to entities. This can be used to batch add a component to every entity. Note that this will **not** check if the component you are trying to add is a real Minecraft component, only if the JSON itself is valid.
+
 ```
-help
+Usage: bed entity component [options] <component>
+
+Arguments:
+  component                 the component as a json object {minecraft:is_baby:{}}
+
+Options:
+  -t, --type <family type>  filter entities by family type
+  -f, --file <file>         the entity files that should be modified (default: "**/*.json")
+  -h, --help                display help for command
 ```
 ### Example(s)
 ---
+```
+bed entity component --file player.json {minecraft:is_baby:{}}
+```
+This adds the `minecraft:is_baby` component to the player.
 
 &nbsp;
 
 ---
-## Add Components To Entities
+## Add Component Groups To Entities
 Adds a component group to entities. This accepts a JSON object that will get added to the entities' component groups.
 ```
 Usage: bed entity group [options] <group>
@@ -556,14 +569,12 @@ Commands:
   event [options] <values...>  Adds a property event to entities
   help [command]               display help for command
 ```
-### Example(s)
----
 
 &nbsp;
 
 ---
 ## Add Property Definition
-Adds a property to entities.
+Adds a property to entities. When creating a property it will attempt to automatically convert the values to the appropriate type.
 
 ```
 Usage: bed entity property add [options] <names...>
@@ -582,12 +593,50 @@ Options:
 ```
 ### Example(s)
 ---
+```
+bed entity property add --file player.json --property int --values 1 10 --default 1 ldz:int_prop
+```
+This command modifies the player.json file, sets the property type to int, with a value range of 1-10, a default of 1, and a title of ldz:int_prop. Outputting as follows:
+```json
+{
+	"ldz:int_prop": {
+		"type": "int",
+		"range": [
+			1,
+			10
+		],
+		"default": 1
+	}
+}
+```
+---
+Notice what happens if we use the exact same command, but change the property type to enum though.
+```
+bed entity property add --file player.json --property enum --values 1 10 --default 1 ldz:enum_prop
+```
+Now our output is:
+```json
+{
+    "ldz:enum_prop": {
+        "type": "enum",
+        "values": [
+            "1",
+            "10"
+        ],
+        "default": "1"
+    }
+}
+```
+The `range` property that is appropriate for int and floats has been changed to `values` as appropriate for enums. Additionally, the entries in `values` and `defualt` have automatically been converted to strings instead of numbers. 
+
+---
+Note that if your value can't be properly converted to a value, it will default to a string.
 
 &nbsp;
 
 ---
 ## Add Property Events
-Adds a property event to entities.
+Adds a property event to entities. This command will fail if you try to create an event on an entity that doesn't implement the property you are trying to set.
 ```
 Arguments:
   values                          the values to set the property to
@@ -601,12 +650,151 @@ Options:
 ```
 ### Example(s)
 ---
+```
+bed entity property event --file player.json --property ldz:int_prop 1 2 3 4 5
+```
+This creates five new events called `set_int_prop_to_1`, `set_int_prop_to_1`, etc. which set `ldz:int_prop` to the specified value.
+
+---
+As with `property add`, this command will automatically determine what type the values should be. If we run the same command again, but this time with `ldz:enum_prop` as the target.
+```
+bed entity property event --file player.json --property ldz:enum_prop 1 2 3 4 5
+```
+Then our outputs become:
+```json
+{
+    "set_enum_prop_to_1": {
+        "set_property": {
+            "ldz:enum_prop": "1"
+        }
+    },
+    ...
+}
+```
+Automatically changing `1` to `"1"` since the property was an enum.
+
+---
+If the value can't be converted cleanly (like trying to turn "abc" into an int), then the value defaults to a string. This is to allow for things like:
+```
+bed entity property event --file player.json --property ldz:int_prop q.property('ldz:int_prop')+1
+```
+This creates the output:
+```json
+{
+    "set_int_prop_to_q.property('ldz:int_prop')+1": {
+        "set_property": {
+            "ldz:int_prop": "q.property('ldz:int_prop')+1"
+        }
+    }
+}
+```
+This is great, but we probably don't want our event to be called `set_int_prop_to_q.property('ldz:int_prop')+1`, so we can specify our own event name with `--event` option.
+```
+bed entity property event --file player.json --property ldz:int_prop --event add_1_to_int_prop q.property('ldz:int_prop')+1
+```
+Here we specify the event name, so the output becomes:
+```json
+{
+    "add_1_to_int_prop": {
+        "set_property": {
+            "ldz:int_prop": "q.property('ldz:int_prop')+1"
+        }
+    }
+}
+```
+Much better.
+
+---
+This command won't run on an entity that doesn't implement the property. This is to avoid errors from setting properties that don't exist, but it can be helpful for another reason.
+```
+bed entity property event --property ldz:int_prop 10
+```
+Let's say our project in this example has three entities: pig, player, and skeleton. Of these three, only the player has the `ldz:int_property`. And since entity commands without a `--file` or `--type` specified will automatically affect every entity in the project, we get the output:
+```
+ldz:int_prop not found on ./behavior_packs/entities/pig.json
+Failed to write to ./behavior_packs/entities/pig.json
+Wrote JSON to: ./behavior_packs/entities/player.json
+ldz:int_prop not found on ./behavior_packs/entities/skeleton.json
+Failed to write to ./behavior_packs/entities/skeleton.json
+```
+The command didn't write pig.json or skeleton.json, but it did write to player.json. So this can be a quick way to add property events to every entity that actually uses that property.
 
 &nbsp;
 
 ---
 ## Package Manager
-Package manager for Bedrock files.
+Package manager for Bedrock files. We use a special method of using a GitHub repository as a package storage solution. 
+### Setting Up (For Admins)
+This requires your repository to be configured in a very specific way:
+```
+package_repo
+| packages.json
+|
+└─Example Package 1
+| └─RP
+| | └─entity
+| | | | example.entity.json
+| | | |
+| | └─models
+| | | └─entity
+| | | | | example.geo.json
+| | | | |
+| | └─textures
+| | | └─example
+| | | | | default.png
+| | | | |
+| | └─texts
+| | | | en_US.lang
+| | | |
+| └─BP
+| | └─entities
+| |   | example.json
+| |   |
+| | README.md
+|
+└─Example Package 2
+...
+```
+The important takeaways here are:
+- Each individual package should be contained in its own folder at the root of your project.
+- Packages should have a `BP` folder that acts as the root of a `behavior_pack` and contents inside will be added into your project.
+- Packages should have a `RP` folder that acts as the root of a `resource_pack` and contents inside will be added into your project.
+- Both `BP` and `RP` are optional. If your package only contains a particle effect for example, then you would only need a `RP` folder and don't need to include a `BP`.
+- The packages.json folder is what is specifically read to find your packages, and should be laid out as:
+```json
+[
+    {
+        "name": "example_package_1",
+        "display_name": "Example Package 1",
+        "description": "An example entity.",
+        "categories": [
+            "entity"
+        ],
+        "index": 0,
+        "repository": {
+            "url": "https://api.github.com/repos/{ORGANIZATION}/{REPO}/contents/Example%20Package%201?ref=main"
+        }
+    },
+    {
+        "name": "example_package_2",
+        "display_name": "Example Package 2",
+        "description": "An example particle.",
+        "categories": [
+            "particle"
+        ],
+        "index": 1,
+        "repository": {
+            "url": "https://api.github.com/repos/{ORGANIZATION}/{REPO}/contents/Example%20Package%202?ref=main"
+        }
+    }
+]
+```
+The `name` can be whatever you like, but `display_name` is what will actually be seen by users. `description` provides additional details when `bed pkg list --detailed` is run, and should be a concise 1-2 sentance description, a more detailed explanation can be in the README for that package. `categories` can be used to help filter the package list if you have a lot of packages. `repository>url` is very important as this is the actual path to your package that will be downloaded. `{Organization}` should be replaced by the name of your user or organization name, i.e. `DauntlessStudio`, and `{REPO}` should be replaced by the repository name where you store your packages. The last section `contents/...?ref=main`, ... should be replaced with the title of your folder, i.e. `Example Package 1`, with `%20` instead of spaces, so `Example%20Package%201`.
+
+### Setting Up (For Users)
+Rather than manually specifying the Organization and Repo each time you use the program, it will check your Environment Variables, so they should be configured as:
+![environment_variables](environment_var.jpg)
+If you aren't familiar with how to create your own GitHub token, talk to your packages administrator or follow this [guide](https://docs.github.com/en/enterprise-server@3.4/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token).
 
 ```
 Usage: bed pkg [options] [command]
@@ -619,8 +807,6 @@ Commands:
   import <packages...>  import packages from repo
   help [command]        display help for command
 ```
-### Example(s)
----
 
 &nbsp;
 
@@ -638,7 +824,28 @@ Options:
 ```
 ### Example(s)
 ---
-
+```
+bed pkg list --detailed
+```
+Lists all of the available packages, and a short description of them. An example output might be:
+```
+[0] Example Package 1
+      An example entity.
+[1] Example Package 2
+      An example particle.
+```
+---
+You can filter this list by category, or searching what appears in the title.
+```
+bed pkg list --detailed --filter 1
+bed pkg list --detailed --filter entity
+```
+Either of these commands would produce the filtered list:
+```
+[0] Example Package 1
+      An example entity.
+```
+Since `1` only appears in the title `Example Package 1` and that is the only package that includes the `entity` category.
 &nbsp;
 
 ---
@@ -656,6 +863,12 @@ Options:
 ```
 ### Example(s)
 ---
+You can import a package by title or index. So based on the examples from [List Packages](#list-packages):
+```
+bed pkg import 0
+bed pkg import "Example Package 1"
+```
+Would both import the first package `Example Package 1`.
 
 &nbsp;
 
