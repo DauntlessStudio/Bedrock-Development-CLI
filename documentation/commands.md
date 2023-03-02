@@ -191,10 +191,10 @@ Arguments:
   names                      animation names names as "entity.anim"
 
 Options:
-  -l, --loop                 should the animation loop
-  -c, --commands <commands>  the commands to play (default: "/say anim_name")
-  -t, --time                 the animation length
-  -h, --help                 display help for command
+  -l, --loop                    should the animation loop
+  -c, --commands <commands...>  the commands to play (default: ["/say anim_name"])
+  -t, --time <time>             the animation length (default: 1)
+  -h, --help                    display help for command
 ```
 ### Example(s)
 ---
@@ -217,8 +217,6 @@ This outputs an animation with all defaults, an animation length of 1 seconds, n
 	}
 }
 ```
----
-The `--time` and `--commands` arguments are currently not working.
 &nbsp;
 
 ---
@@ -232,12 +230,12 @@ Arguments:
   names                            controller names as "entity.anim"
 
 Options:
-  -e, --entry [on entry commands]  the commands to play on entry (default: "/say anim_name")
-  -x, --exit [on exit commands]    the commands to play on exit (preset: "/say anim_name")
-  -a, --anim <animations>          the animations to play
-  -q, --query [query]              the query to transition from default (default: "true")
-  -t, --transition [transition]    the query to transition back to default (preset: "true")
-  -h, --help                       display help for command
+  -e, --entry [on entry commands...]  the commands to play on entry (default: ["/say anim_name"])
+  -x, --exit [on exit commands...]    the commands to play on exit (preset: ["/say anim_name"])
+  -a, --anim <animations...>          the animations to play
+  -q, --query [query]                 the query to transition from default (default: "true")
+  -t, --transition [transition]       the query to transition back to default (preset: "true")
+  -h, --help                          display help for command
 ```
 ### Example(s)
 ---
@@ -306,8 +304,6 @@ This outputs a more complex controller with specified transition queries and spe
 	}
 }
 ```
----
-Currently the `--anim` argument doesn't work.
 
 &nbsp;
 
@@ -448,6 +444,7 @@ Options:
   -t, --type <family type>  filter entities by family type
   -f, --file <file>         the entity files that should be modified (default: "**/*.json")
   -s, --script              should these animations be added to script
+  -c, --create [anim type]  create the animation as well (choices: "ctrl", "anim", preset: "ctrl")
   -h, --help                display help for command
 ```
 ### Example(s)
@@ -456,6 +453,14 @@ Options:
 bed entity anim --file player.json --script player.test
 ```
 This will attempt to find an animation, or controller called 'player.test'. If it finds it, it will add that reference to the player file, automatically determining whether it is an animation or animation controller, and because we included the `--script` option, it will add it to `animate>scripts`.
+
+---
+```
+bed entity anim --file player.json --script --create ctrl player.test
+```
+The inclusion of the `--create anim | --create ctrl` option effectively combines this command with `bed new anim | bed new ctrl` depending on the provided value. This can streamline the creation of animations/controllers and the adding of them to an entity.
+
+This will create the controller or animation with all default values.
 
 &nbsp;
 

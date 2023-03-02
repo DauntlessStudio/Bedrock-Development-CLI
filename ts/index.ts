@@ -10,7 +10,7 @@ import * as Package from 'bedrock-development/bin/app/package_manager';
 import axios from 'axios';
 
 let program = new Command();
-const version = '1.0.15'
+const version = '1.0.16'
 
 program
   .name('bed')
@@ -59,17 +59,17 @@ createNew.command('anim')
   .description('Creates new Bedrock behavior animations')
   .argument('<names...>', 'animation names names as "entity.anim"')
   .option('-l, --loop', 'should the animation loop')
-  .option('-c, --commands <commands>', 'the commands to play', '/say anim_name')
-  .option('-t, --time', 'the animation length', '1.0')
+  .addOption(new Option('-c, --commands <commands...>', 'the commands to play').default(['/say anim_name']))
+  .addOption(new Option('-t, --time <time>', 'the animation length').default(1.0).argParser(parseFloat))
   .action(triggerCreateNewAnimation)
   .hook('postAction', printVersion);
 
 createNew.command('ctrl')
   .description('Creates new Bedrock behavior animation controllers')
   .argument('<names...>', 'controller names as "entity.anim"')
-  .addOption(new Option('-e, --entry [on entry commands]', 'the commands to play on entry').default('/say anim_name'))
-  .addOption(new Option('-x, --exit [on exit commands]', 'the commands to play on exit').preset('/say anim_name'))
-  .option('-a, --anim <animations>', 'the animations to play')
+  .addOption(new Option('-e, --entry [on entry commands...]', 'the commands to play on entry').default(['/say anim_name']))
+  .addOption(new Option('-x, --exit [on exit commands...]', 'the commands to play on exit').preset(['/say anim_name']))
+  .option('-a, --anim <animations...>', 'the animations to play')
   .option('-q, --query [query]', 'the query to transition from default', 'true')
   .addOption(new Option('-t, --transition [transition]', 'the query to transition back to default').preset('true'))
   .action(triggerCreateNewController)
@@ -104,6 +104,7 @@ entity.command('anim')
   .option('-t, --type <family type>', 'filter entities by family type')
   .option('-f, --file <file>', 'the entity files that should be modified', '**/*.json')
   .option('-s, --script', 'should these animations be added to script')
+  .addOption(new Option('-c, --create [anim type]', 'create the animation as well').choices(['ctrl', 'anim']).preset('ctrl'))
   .action(triggerEntityAddAnim)
   .hook('postAction', printVersion);
 
@@ -244,7 +245,8 @@ async function triggerEntityAddAnim(names: string[], options: OptionValues) {
   const family = options.type;
   const file = options.file;
   const script = options.script;
-  await Entity.entityAddAnim(names, family, file, script);
+  const create = options.create;
+  await Entity.entityAddAnim(names, family, file, script, create);
 }
 
 async function triggerEntityAddGroup(group: string, options: OptionValues) {
