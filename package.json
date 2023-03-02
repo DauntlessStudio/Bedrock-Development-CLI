@@ -1,12 +1,12 @@
 {
   "name": "bedrock-development-cli",
-  "version": "1.0.12",
+  "version": "1.0.13",
   "description": "A CLI to assist development for Minecraft Bedrock",
   "main": "bin/index.js",
   "scripts": {
     "build": "npx tsc -w",
     "clear": "rm ./behavior_packs/** -r && rm ./resource_packs/** -r",
-    "prepare": "node update_version.js && npx tsc",
+    "prepare": "node update_version.js && npx tsc && npm run use_remote",
     "use_local": "npm r bedrock-development && npm i ../bedrock-development",
     "use_remote": "npm r bedrock-development && npm i bedrock-development"
   },
@@ -21,7 +21,7 @@
   "license": "ISC",
   "dependencies": {
     "axios": "^1.2.3",
-    "bedrock-development": "^1.0.12",
+    "bedrock-development": "^1.0.13",
     "chalk": "^4.1.0",
     "commander": "^10.0.0",
     "comment-json": "^4.2.3",
