@@ -461,7 +461,9 @@ This will attempt to find an animation, or controller called 'player.test'. If i
 
 ---
 ## Add Components To Entities
-Adds a component to entities. This can be used to batch add a component to every entity. Note that this will **not** check if the component you are trying to add is a real Minecraft component, only if the JSON itself is valid.
+Adds a component to entities. This can be used to batch add a component to every entity. By default, this will merge the new object with the old one (if it exists), although you can provide the overwrite option.
+
+Note that this will **not** check if the component you are trying to add is a real Minecraft component, only if the JSON itself is valid.
 
 ```
 Usage: bed entity component [options] <component>
@@ -472,6 +474,7 @@ Arguments:
 Options:
   -t, --type <family type>  filter entities by family type
   -f, --file <file>         the entity files that should be modified (default: "**/*.json")
+  -o, --overwrite           should the new component overwrite the old one rather than merge with it?
   -h, --help                display help for command
 ```
 ### Example(s)
@@ -480,6 +483,36 @@ Options:
 bed entity component --file player.json {minecraft:is_baby:{}}
 ```
 This adds the `minecraft:is_baby` component to the player.
+
+---
+```
+bed entity component --file player.json {minecraft:type_family:{family:[\"test\"]}}
+```
+Since the `minecraft:type_family` already exists on the player, this will **combine** the components together:
+```json
+{
+	"minecraft:type_family": {
+		"family": [
+			"player",
+			"test"
+		]
+	}
+}
+```
+---
+```
+bed entity component --file player.json --overwrite {minecraft:type_family:{family:[\"test\"]}}
+```
+Even though the `minecraft:type_family` already exists on the player, this will **overwrite** the old component with the new since we used it with the `--overwrite` option:
+```json
+{
+	"minecraft:type_family": {
+		"family": [
+			"test"
+		]
+	}
+}
+```
 
 &nbsp;
 

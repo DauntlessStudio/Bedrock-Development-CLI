@@ -10,7 +10,7 @@ import * as Package from 'bedrock-development/bin/app/package_manager';
 import axios from 'axios';
 
 let program = new Command();
-const version = '1.0.13'
+const version = '1.0.14'
 
 program
   .name('bed')
@@ -120,6 +120,7 @@ entity.command('component')
   .argument('<component>', 'the component as a json object {minecraft:is_baby:{}}')
   .option('-t, --type <family type>', 'filter entities by family type')
   .option('-f, --file <file>', 'the entity files that should be modified', '**/*.json')
+  .option('-o, --overwrite', 'should the new component overwrite the old one rather than merge with it?')
   .action(triggerEntityAddComponent)
   .hook('postAction', printVersion);
 
@@ -256,7 +257,8 @@ async function triggerEntityAddComponent(component: string, options: OptionValue
   await setPaths();
   const family = options.type;
   const file = options.file;
-  await Entity.entityAddComponent(component, family, file);
+  const overwrite = options.overwrite;
+  await Entity.entityAddComponent(component, family, file, overwrite);
 }
 
 async function triggerEntityAddProperty(names: string[], options: OptionValues) {
