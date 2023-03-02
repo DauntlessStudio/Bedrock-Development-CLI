@@ -10,7 +10,7 @@ import * as Package from 'bedrock-development/bin/app/package_manager';
 import axios from 'axios';
 
 let program = new Command();
-const version = '1.0.14'
+const version = '1.0.15'
 
 program
   .name('bed')
@@ -120,7 +120,7 @@ entity.command('component')
   .argument('<component>', 'the component as a json object {minecraft:is_baby:{}}')
   .option('-t, --type <family type>', 'filter entities by family type')
   .option('-f, --file <file>', 'the entity files that should be modified', '**/*.json')
-  .option('-o, --overwrite', 'should the new component overwrite the old one rather than merge with it?')
+  .option('-o, --overwrite', 'should the new component overwrite the old one rather than merge with it')
   .action(triggerEntityAddComponent)
   .hook('postAction', printVersion);
 
@@ -129,6 +129,7 @@ entity.command('sensor')
   .argument('<sensor>', 'the damage sensor as a json object {cause: \\"all\\", deals_damage: false}')
   .option('-t, --type <family type>', 'filter entities by family type')
   .option('-f, --file <file>', 'the entity files that should be modified', '**/*.json')
+  .option('-s, --start', 'adds the new sensor to the start of the array, rather than the end')
   .action(triggerEntityAddDamageSensor)
   .hook('postAction', printVersion);
 
@@ -285,7 +286,8 @@ async function triggerEntityAddDamageSensor(sensor: string, options: OptionValue
   await setPaths();
   const type = options.type;
   const file = options.file;
-  await Entity.entityAddDamageSensor(sensor, type, file);
+  const start = options.start;
+  await Entity.entityAddDamageSensor(sensor, type, file, start);
 }
 
 async function triggerPackagesList(options: OptionValues) {

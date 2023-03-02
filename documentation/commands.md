@@ -569,6 +569,7 @@ Arguments:
 Options:
   -t, --type <family type>  filter entities by family type
   -f, --file <file>         the entity files that should be modified (default: "**/*.json")
+  -s, --start               adds the new sensor to the start of the array, rather than the end
   -h, --help                display help for command
 ```
 ### Example(s)
@@ -583,7 +584,11 @@ This adds a damage sensor entry to every entity in the project, it will add a da
 	"deals_damage": false
 }
 ```
-**Please Note**, the damage sensor entries from this command are always added to the bottom of the list, so all the other damage sensors will be executed first.
+---
+The damage sensor entries from this command are always added to the bottom of the list, so all the other damage sensors will be executed first. But you can add your custom sensor to the top of the list with:
+```
+bed entity sensor --start {cause:\"all\",deals_damage:false}
+```
 
 &nbsp;
 
