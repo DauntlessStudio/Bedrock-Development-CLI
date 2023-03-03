@@ -1,3 +1,7 @@
+# Deprecated
+This project is deprecated in favor of folding its features into the underlying API. The currently maintained project is [here](https://github.com/DauntlessStudio/Bedrock-Developments).
+
+---
 # Bedrock-Development-CLI
 A CLI to assist development for Minecraft Bedrock
 ## Requirements
